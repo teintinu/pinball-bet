@@ -21,7 +21,7 @@ export function createBet(app: Application) {
     graphic.beginFill(0xFF0000, 0);
     graphic.drawCircle(0, 0, betRadio * 0.6);
     graphic.endFill();
-    graphic.x = (app.screen.width * 0.4) + (Math.random() * (app.screen.width / 4));
+    graphic.x = gamePins.apear.left + (Math.random() * (gamePins.apear.right - gamePins.apear.left));
     graphic.y = 0;
     app.stage.addChild(graphic);
     app.ticker.add(animate);

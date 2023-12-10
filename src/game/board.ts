@@ -18,6 +18,10 @@ export interface GamePayout {
 
 export const gamePins = {
     pinRadio: 0,
+    apear: {
+        left: 0,
+        right: 0,
+    },
     lastY: 0,
     pins: [] as GamePin[]
 }
@@ -43,6 +47,7 @@ export function createBoard(app: Application) {
         gamePins.lastY = y
         let x = (app.view.width * 0.03) + ((app.view.width - (horizontalGap * pinPerRow)) / 2)
         squareX = x
+        if (row === 1) gamePins.apear.left = x
         for (let pin = 1; pin <= pinPerRow; pin++) {
             const graphic = new Graphics()
             graphic.beginFill(0xffffff)
@@ -50,6 +55,7 @@ export function createBoard(app: Application) {
             graphic.endFill();
             graphic.x = x
             graphic.y = y
+            if (row === 1) gamePins.apear.right = x
             app.stage.addChild(graphic)
             gamePins.pins.push({
                 x,

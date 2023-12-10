@@ -18,10 +18,12 @@ export function GameApp() {
     useEffect(() => {
         renderGame(gameBoardRef.current!)
         setPayouts({ ...gamePayouts })
-        gameBoardRef.current!.addEventListener('resize', () => {
+        window.addEventListener('resize', handleResize)
+        return () => { window.removeEventListener('resize', handleResize ) }
+        function handleResize() {
             renderGame(gameBoardRef.current!)
             setPayouts({ ...gamePayouts })
-        })
+        }
     }, [rows, risk])
     return <div className='bg-gray-900 md:flex-1 w-full flex flex-col justify-stretch h-[70svh] md:h-full'>
         <div className='flex justify-stretch h-full w-full relative'>
