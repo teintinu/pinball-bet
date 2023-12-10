@@ -36,7 +36,7 @@ export function createBet(app: Application) {
         const collission = getCollission();
         if (collission) {
             const angle = Math.atan2(graphic.y - collission.graphic.y, graphic.x - collission.graphic.x);
-            speed.x = Math.cos(angle) * 1.2;
+            speed.x = Math.cos(angle) * 1.7;
             if (speed.x < 0 && speed.x > -0.3) speed.x = -0.3;
             if (speed.x > 0 && speed.x < 0.3) speed.x = 0.3;
             speed.y = speed.y * Math.sin(angle) * 0.6;
@@ -48,18 +48,16 @@ export function createBet(app: Application) {
         if (graphic.y > gamePins.lastY) {
             finish();
         } else {
-            if (speed.y < 0) speed.y += 0.05 * delta;
-            else if (speed.y > 0) speed.y += 0.05 * delta;
+            if (speed.y < 0) speed.y += 0.15 * delta;
+            else if (speed.y > 0) speed.y += 0.06 * delta;
             else speed.y = initialSpeed.y;
             if (Math.abs(speed.x) < 0.03) speed.x = Math.random() * 0.3 - 0.05;
             else if (speed.x < 0) speed.x += 0.02 * delta;
             else if (speed.x > 0) speed.x -= 0.02 * delta;
-            if (Math.random() > 0.7) {
-                if (graphic.x > gamePayouts.prefererPayout.x) {
-                    if (speed.x > 0) speed.x -= 0.02 * delta;
-                } if (graphic.x < gamePayouts.prefererPayout.x) {
-                    if (speed.x < 0) speed.x += 0.02 * delta;
-                }
+            if (graphic.x > gamePayouts.prefererPayout.x) {
+                if (speed.x > 0) speed.x -= 0.035 * delta;
+            } if (graphic.x < gamePayouts.prefererPayout.x) {
+                if (speed.x < 0) speed.x += 0.035 * delta;
             }
         }
     }

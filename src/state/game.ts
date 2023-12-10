@@ -7,10 +7,10 @@ export type GameState = typeof gameState
 
 const gameState = {
     mode: 'manual' as 'manual' | 'auto',
-    betValue: 0.00002,
+    betValue: 0.0002,
     balance: 0.007125,
-    risk: 'low' as BetRisk,
-    rows: 8,
+    risk: 'medium' as BetRisk,
+    rows: 16,
     activeBets: 0,
     lastPayouts: [] as GamePayout[],
     playSounds: true,
