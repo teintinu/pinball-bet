@@ -23,8 +23,8 @@ export function GameApp() {
             setPayouts({ ...gamePayouts })
         })
     }, [rows, risk])
-    return <div className='bg-gray-900 flex-1 h-full w-full flex flex-col justify-stretch '>
-        <div className='flex justify-stretch h-full w-full'>
+    return <div className='bg-gray-900 md:flex-1 w-full flex flex-col justify-stretch h-[70svh] md:h-full'>
+        <div className='flex justify-stretch h-full w-full relative'>
             <div ref={gameBoardRef} className='flex-1' />
             <LastPayouts />
         </div>

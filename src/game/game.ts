@@ -15,10 +15,11 @@ export function renderGame(element: HTMLElement) {
         sound.add('pop', allAssets.popSound);
         app = new Application({
             background: '#111827',
-            resizeTo: element,
             antialias: true,
         });
     }
+    app.view.width = element.clientWidth;
+    app.view.height = element.clientHeight;
     createBoard(app);
     element.appendChild(app.view as never);
 }

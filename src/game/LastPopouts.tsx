@@ -4,7 +4,7 @@ import { PayoutWidget } from "./Payout"
 export function LastPayouts() {
     const { lastPayouts } = useGameState()
     const [pu, p1, p2, p3, p4, pd] = lastPayouts
-    return <div className='w-32 h-full flex flex-col gap-2 py-10 px-2 items-stretch justify-stretch'>
+    return <div className='absolute right-0 top-0 w-[90px] h-[360px] flex flex-col gap-2 md:py-10 px-2 items-stretch justify-stretch'>
         <div className="relative p-2">{pu ? <PayoutWidget payout={pu} relative /> : null}</div>
         <div className="relative p-2">{p1 ? <PayoutWidget payout={p1} relative /> : null}</div>
         <div className="relative p-2">{p2 ? <PayoutWidget payout={p2} relative /> : null}</div>

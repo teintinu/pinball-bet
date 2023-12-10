@@ -6,11 +6,11 @@ export function App() {
   useGameLocale()
 
   return (
-    <div className='w-[100svw] h-[100svh] max-h-[100svh] flex p-10 bg-gray-800'>
-      <div className='w-[400px] bg-gray-700'>
+    <div className='md:w-[100svw] md:h-[100svh] md:sm:h-max md:max-h-[100svh] max-h-max flex flex-col md:flex-row p-0 md:p-0 bg-gray-800'>
+      <GameApp />
+      <div className='md:w-[400px] bg-gray-700 md:-order-1'>
         <GameForm />
       </div>
-      <GameApp />
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { gameBet } from "../game";
 import { formatNumber, i18n, updateGameState, useGameState } from "../state";
+import { InputBetValue } from "./InputBetValue";
 import { InputGameLocale } from "./InputGameLocale";
 import { InputGameMode } from "./InputGameMode";
 import { InputGameSounds } from "./InputGameSounds";
@@ -8,45 +9,19 @@ export function GameForm() {
     const { betValue, balance, risk, rows, activeBets } = useGameState();
     return (
         <form className="flex flex-col gap-3 text-sm font-mediu text-white p-8 h-full">
+            <button type="button" className="md:order-2 bg-green-500 px-8 py-6 text-xl rounded-xl disabled:opacity-75 disabled:cursor-not-allowed"
+                disabled={balance < betValue}
+                onClick={() => gameBet(true)}>
+                {i18n().bet}
+            </button>
+            <InputBetValue />
             <InputGameMode />
-            <div className="flex justify-between w-full pt-8">
-                <label htmlFor="board-bet" className="block ">
-                    {i18n().betAmount}
-                </label>
-                <label htmlFor="board-bet" className="block ">
-                    {'US$ 0,00'}
-                </label>
-            </div>
-            <div className="flex justify-between w-full h-14 mx-2 gap-1 shadow-sm shadow-black">
-                <div
-                    className="shadow-sm block w-full sm:text-sm border-gray-300 rounded-md bg-gray-900 flex-1 px-1"
-                >
-                    <input
-                        type="number"
-                        name="board-bet"
-                        id="board-bet"
-                        className="block w-full h-full text-lg pl-4 outline-none border-gray-300 rounded-md bg-gray-900 flex-1"
-                        min={0.1}
-                        max={balance}
-                        disabled={activeBets > 0}
-                        value={betValue}
-                        onChange={(e) => {
-                            updateGameState((prev) => ({
-                                ...prev,
-                                betValue: Number(e.target.value),
-                            }));
-                        }}
-                    />
-                </div>
-                <button className="bg-gray-700 rounded-md m-2 w-6" type="button">½</button>
-                <button className="bg-gray-700 rounded-md m-2 w-6" type="button">2x</button>
-            </div>
-            <div className="flex justify-between w-full pt-4">
+            <div className="md:order-1 flex justify-between w-full pt-4">
                 <label htmlFor="board-risk" className="block ">
                     {i18n().risk}
                 </label>
             </div>
-            <div className="flex justify-between w-full h-14 mx-2 gap-1 pb-2">
+            <div className="md:order-1 flex justify-between w-full h-14 mx-2 gap-1 pb-2">
                 <select
                     name="board-risk"
                     id="board-risk"
@@ -65,12 +40,12 @@ export function GameForm() {
                     <option value="high">{i18n().high}</option>
                 </select>
             </div>
-            <div className="flex justify-between w-full pt-4">
+            <div className="md:order-1 flex justify-between w-full pt-4">
                 <label htmlFor="board-rows" className="block ">
                     {i18n().rows}
                 </label>
             </div>
-            <div className="flex justify-between w-full h-14 mx-2 gap-1 pb-2">
+            <div className="md:order-1 flex justify-between w-full h-14 mx-2 gap-1 pb-2">
                 <select
                     name="board-rows"
                     id="board-rows"
@@ -89,12 +64,7 @@ export function GameForm() {
                     ))}
                 </select>
             </div>
-            <button type="button" className="bg-green-500 px-8 py-6 text-xl rounded-xl"
-                disabled={balance < betValue}
-                onClick={() => gameBet(true)}>
-                {i18n().bet}
-            </button>
-            <div className="flex justify-between w-full pt-8">
+            <div className="md:order-1 flex justify-between w-full pt-8">
                 <label htmlFor="board-bet" className="block ">
                     {i18n().balance}
                 </label>
@@ -102,7 +72,7 @@ export function GameForm() {
                     {formatNumber(balance, 1, 8)}
                 </label>
             </div>
-            <div className="flex-1 flex items-end">
+            <div className="md:order-3 flex-1 flex items-end">
                 <div className="flex-1 flex flex-col">
                     <InputGameSounds />
                     <InputGameLocale />
