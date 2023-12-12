@@ -18,10 +18,13 @@ export interface GamePayout {
 
 export const gamePins = {
     pinRadio: 0,
-    apear: {
+    appear: {
         left: 0,
         right: 0,
     },
+    rows: 0,
+    verticalGap: 0.01, 
+    horizontalGap: 0.01,
     lastY: 0,
     pins: [] as GamePin[]
 }
@@ -36,18 +39,18 @@ export const gamePayouts = {
 export function createBoard(app: Application) {
     const { rows, risk } = getGameState()
     let pinPerRow = 3
-    const verticalGap = (app.view.height * 0.97) / rows
-    const horizontalGap = (app.view.width * 0.9) / (rows + 2)
-    gamePins.pinRadio = horizontalGap / 10
+    gamePins.verticalGap = (app.view.height * 0.9) / rows
+    gamePins.horizontalGap = (app.view.width * 0.9) / (rows + 2)
+    gamePins.pinRadio = gamePins.horizontalGap / 10
     gamePins.pins = []
+    gamePins.rows = rows
     gamePayouts.payouts = []
-    let y = verticalGap
+    let y = gamePins.verticalGap
     let squareX = 0
     for (let row = 1; row <= rows; row++) {
-        gamePins.lastY = y
-        let x = (app.view.width * 0.03) + ((app.view.width - (horizontalGap * pinPerRow)) / 2)
+        let x = (app.view.width * 0.03) + ((app.view.width - (gamePins.horizontalGap * pinPerRow)) / 2)
         squareX = x
-        if (row === 1) gamePins.apear.left = x
+        if (row === 1) gamePins.appear.left = x
         for (let pin = 1; pin <= pinPerRow; pin++) {
             const graphic = new Graphics()
             graphic.beginFill(0xffffff)
@@ -55,24 +58,25 @@ export function createBoard(app: Application) {
             graphic.endFill();
             graphic.x = x
             graphic.y = y
-            if (row === 1) gamePins.apear.right = x
+            if (row === 1) gamePins.appear.right = x
             app.stage.addChild(graphic)
             gamePins.pins.push({
                 x,
                 y,
                 graphic,
             });
-            x += horizontalGap
+            x += gamePins.horizontalGap
         }
         pinPerRow += 1
-        y += verticalGap
+        y += gamePins.verticalGap
+        gamePins.lastY = y
     }
     const squareCount = pinPerRow - 2
-    gamePayouts.squareWidth = horizontalGap * 0.8
-    gamePayouts.squareHeight = verticalGap * 0.4
+    gamePayouts.squareWidth = gamePins.horizontalGap * 0.8
+    gamePayouts.squareHeight = gamePins.verticalGap * 0.4
     gamePayouts.prefererPayout = { tax: Infinity } as GamePayout
-    squareX += horizontalGap * 0.1
-    y -= verticalGap * 0.7
+    squareX += gamePins.horizontalGap * 0.1
+    y -= gamePins.verticalGap * 0.7
     let colorGap = (payoutPallete.length - 1) / (squareCount / 2)
     let colorIdx = payoutPallete.length - 1;
     const textClass = squareCount > 12 ? ' text-xs' : ' text-sm'
@@ -88,7 +92,7 @@ export function createBoard(app: Application) {
         }
         if (p.tax < gamePayouts.prefererPayout.tax) gamePayouts.prefererPayout = p
         gamePayouts.payouts.push(p);
-        squareX += horizontalGap
+        squareX += gamePins.horizontalGap
         colorIdx -= colorGap
         // console.log(i, colorIdx, colorGap)
         if (colorIdx < 0) {

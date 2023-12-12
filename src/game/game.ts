@@ -15,13 +15,17 @@ export function renderGame(element: HTMLElement) {
         sound.add('pop', allAssets.popSound);
         app = new Application({
             background: '#111827',
-            antialias: true,
+            antialias: false,
+            resizeTo: element,
         });
+        element.appendChild(app.view as never);
     }
-    app.view.width = element.clientWidth;
-    app.view.height = element.clientHeight;
+    console.log(element.clientWidth, element.clientHeight, element)
+    // app.view.width = element.clientWidth;
+    // app.view.height = element.clientHeight;
+    // app.view.width = 1040;
+    // app.view.height = 874;
     createBoard(app);
-    element.appendChild(app.view as never);
 }
 
 export function gameBet(manualSoundEffect: boolean) {
@@ -37,4 +41,8 @@ export function gameBet(manualSoundEffect: boolean) {
     }
     if (manualSoundEffect && playSounds) sound.play('blep');
     createBet(app);
+}
+
+export function isMediumScreen() {
+    return app.view.width > 768
 }

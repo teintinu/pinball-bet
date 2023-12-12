@@ -14,20 +14,19 @@ export function PayoutWidget({ payout, relative }: PayoutWidgetProps) {
         if (animating) {
             setTimeout(() => {
                 animatePayOut(payout.idx, false)
-            }, 500)
-            return 'transition translate-y-4 scale-125 duration-300 ease-in-out'
+            }, 900)
+            return 'transition -translate-y-1 scale-125 duration-500 ease-in-out shadow-xl'
         }
         return ''
     }, [animating, payout.idx])
     return <div
-        className={(relative ? '' : 'absolute') + " rounded-md shadow-lg flex items-center justify-center " + payout.style + animateClass}
+        className={(relative ? 'h-10' : 'absolute h-10') + " rounded-md shadow-lg flex items-center justify-center " + payout.style + animateClass}
         style={relative ? {} : {
             left: payout.x + 'px',
             top: 2,
             width: gamePayouts.squareWidth + 'px',
-            height: 40,
         }}
     >
-        {formatNumber(payout.tax, 0, 1) + '\u00d7'}
+        {payout.tax ? formatNumber(payout.tax, 0, 1) + '\u00d7' : ''}
     </div >
 }

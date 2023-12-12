@@ -13,8 +13,8 @@ export function renderCollission(app: Application, pin: GamePin) {
     app.stage.addChild(graphic);
     app.ticker.add(animate);
     function animate(delta: number) {
-        graphic.scale.x -= 0.01 * delta
-        graphic.scale.y -= 0.01 * delta
+        graphic.scale.x -= 0.03 * delta
+        graphic.scale.y -= 0.03 * delta
         if (graphic.scale.y <= 1) {
             app.ticker.remove(animate);
             app.stage.removeChild(graphic)

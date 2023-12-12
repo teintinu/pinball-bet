@@ -1,28 +1,29 @@
-import { Application, Graphics } from "pixi.js";
-import { animatePayOut, getGameState, updateGameState } from "../state";
-import { gamePayouts, gamePins } from "./board";
+import { Application, Sprite } from "pixi.js";
+import { animatePayOut, getGameState, incPayOutIdx, updateGameState } from "../state";
+import { GamePayout, gamePayouts, gamePins } from "./board";
 import { renderCollission } from "./collission";
 import { sound } from "@pixi/sound";
+import { allAssets } from "../assets";
 
 export function createBet(app: Application) {
     const betRadio = gamePins.pinRadio * 2
-    const initialSpeed = {
-        y: app.view.height * 0.003,
+    console.log(gamePins)
+    const refSpeed = {
+        y: gamePins.verticalGap * 0.2,
+        x: gamePins.horizontalGap * 0.05,
     }
+    console.log(refSpeed, app.view.height, app.view.height / gamePins.verticalGap)
     const speed = {
         x: 0,
-        y: initialSpeed.y,
+        y: refSpeed.y,
     }
-    const graphic = new Graphics();
-    graphic.beginFill(0xFF0000);
-    graphic.drawCircle(0, 0, betRadio);
-    graphic.endFill();
-    graphic.lineStyle(1, 0x000000);
-    graphic.beginFill(0xFF0000, 0);
-    graphic.drawCircle(0, 0, betRadio * 0.6);
-    graphic.endFill();
-    graphic.x = gamePins.apear.left + (Math.random() * (gamePins.apear.right - gamePins.apear.left));
+    const graphic = Sprite.from(allAssets.ballImage);
+    graphic.anchor.set(0.5);
+    graphic.scale.set(betRadio / 90);
+    graphic.x = gamePins.appear.left + (Math.random() * (gamePins.appear.right - gamePins.appear.left));
     graphic.y = 0;
+    const virtualWall = { left: 0, right: 0, top: 0 }
+    const collissions: Record<number, boolean> = {}
     app.stage.addChild(graphic);
     app.ticker.add(animate);
     updateGameState((prev) => {
@@ -35,29 +36,50 @@ export function createBet(app: Application) {
     function animate(delta: number) {
         const collission = getCollission();
         if (collission) {
+            if (speed.y < 0 && !collissions[collission.y]) {
+                virtualWall.top = collission.y - gamePins.verticalGap * 0.8
+                virtualWall.left = collission.x - gamePins.horizontalGap * 0.4
+                virtualWall.right = collission.x + gamePins.horizontalGap * 0.4
+            }
+            const force = (1 + Math.random() * 0.6)
             const angle = Math.atan2(graphic.y - collission.graphic.y, graphic.x - collission.graphic.x);
-            speed.x = Math.cos(angle) * 1.7;
-            if (speed.x < 0 && speed.x > -0.3) speed.x = -0.3;
-            if (speed.x > 0 && speed.x < 0.3) speed.x = 0.3;
-            speed.y = speed.y * Math.sin(angle) * 0.6;
+            if (speed.y < 0) speed.y = refSpeed.y * Math.sin(angle) * 1.7
+            else speed.y = refSpeed.y * Math.sin(angle);
+            speed.x = Math.cos(angle) * 1.7 * force;
+            if (speed.x < 0 && speed.x > -1.4) speed.x = -1.4;
+            if (speed.x > 0 && speed.x < 1.4) speed.x = 1.4;
+            if (collissions[collission.y] && speed.y < 0) {
+                speed.y = -refSpeed.y * 0.4;
+            }
+            collissions[collission.y] = true
             renderCollission(app, collission);
+        } else {
+            if (graphic.y < virtualWall.top) {
+                speed.y = Math.abs(speed.y);
+            }
+            // if (graphic.x < virtualWall.left) {
+            //     speed.x = Math.abs(speed.x) * 1.01;
+            // } else if (graphic.x > virtualWall.right) {
+            //     speed.x = -Math.abs(speed.x) * 1.01;
+            // }
         }
         graphic.y += speed.y * delta;
         graphic.x += speed.x * delta;
-        document.title = speed.x.toString()
+        graphic.rotation += speed.x * delta * 0.05;
         if (graphic.y > gamePins.lastY) {
             finish();
         } else {
-            if (speed.y < 0) speed.y += 0.15 * delta;
-            else if (speed.y > 0) speed.y += 0.06 * delta;
-            else speed.y = initialSpeed.y;
+            if (speed.y < 0) speed.y += (gamePins.verticalGap * 0.023) * delta;
+            else if (speed.y > 0) speed.y += 0.17 * delta;
+            else speed.y = refSpeed.y;
             if (Math.abs(speed.x) < 0.03) speed.x = Math.random() * 0.3 - 0.05;
             else if (speed.x < 0) speed.x += 0.02 * delta;
             else if (speed.x > 0) speed.x -= 0.02 * delta;
+            const coefPayOut = 0.004 * (gamePins.rows - 7) * Math.random();
             if (graphic.x > gamePayouts.prefererPayout.x) {
-                if (speed.x > 0) speed.x -= 0.035 * delta;
+                if (speed.x > 0) speed.x -= coefPayOut * delta;
             } if (graphic.x < gamePayouts.prefererPayout.x) {
-                if (speed.x < 0) speed.x += 0.035 * delta;
+                if (speed.x < 0) speed.x += coefPayOut * delta;
             }
         }
     }
@@ -65,22 +87,29 @@ export function createBet(app: Application) {
         if (getGameState().playSounds) sound.play('pop');
         app.ticker.remove(animate);
         app.stage.removeChild(graphic);
-        const payout = gamePayouts.payouts.find((payout) => {
-            return (graphic.x < payout.x)
+        let curr: GamePayout | undefined
+        let payout: GamePayout | undefined
+        gamePayouts.payouts.find((p) => {
+            payout = curr
+            curr = p
+            return (graphic.x <= p.x)
         })
         if (payout) {
-            animatePayOut(payout.idx - 1, true)
+            animatePayOut(payout.idx, true)
             updateGameState((prev) => {
                 return {
                     ...prev,
-                    balance: prev.balance + (prev.betValue * payout.tax),
-                    lastPayouts: [{
-                        idx: Date.now(),
-                        x: 0,
-                        y: 0,
-                        style: payout.style,
-                        tax: payout.tax,
-                    }, ...prev.lastPayouts]
+                    balance: prev.balance + (prev.betValue * payout!.tax),
+                    lastPayouts: [
+                        ...prev.lastPayouts.slice(1),
+                        {
+                            idx: incPayOutIdx(),
+                            x: 0,
+                            y: 0,
+                            style: payout!.style,
+                            tax: payout!.tax,
+                        }
+                    ]
                 }
             })
         }

@@ -1,15 +1,42 @@
-import { useGameState } from "../state"
+// import { useEffect, useState } from "react"
+import { emptyPayout, peekPayOutIdx, useGameState } from "../state"
 import { PayoutWidget } from "./Payout"
 
+// let cont = 0
 export function LastPayouts() {
     const { lastPayouts } = useGameState()
-    const [pu, p1, p2, p3, p4, pd] = lastPayouts
-    return <div className='absolute right-0 top-0 w-[90px] h-[360px] flex flex-col gap-2 md:py-10 px-2 items-stretch justify-stretch'>
-        <div className="relative p-2">{pu ? <PayoutWidget payout={pu} relative /> : null}</div>
-        <div className="relative p-2">{p1 ? <PayoutWidget payout={p1} relative /> : null}</div>
-        <div className="relative p-2">{p2 ? <PayoutWidget payout={p2} relative /> : null}</div>
-        <div className="relative p-2">{p3 ? <PayoutWidget payout={p3} relative /> : null}</div>
-        <div className="relative p-2">{p4 ? <PayoutWidget payout={p4} relative /> : null}</div>
-        <div className="relative p-2">{pd ? <PayoutWidget payout={pd} relative /> : null}</div>
+    // const [s, setS] = useState(lastPayouts)
+    // useEffect(() => {
+    //     setS(fn())
+    //     const i = setInterval(() => {
+    //         setS((prev) => [...prev, { idx: cont++, tax: Math.random() * 100, style: 'bg-red-500', x: 0, y: 0 }])
+    //     }, 1000)
+    //     return () => {
+    //         clearInterval(i)
+    //     }
+    //     function fn() {
+    //         return s.map(() => {
+    //             return { idx: cont++, tax: Math.random() * 100, style: 'bg-red-500', x: 0, y: 0 }
+    //         })
+    //     }
+    // }, [])
+
+    // const s2 = s.slice(s.length - 6)
+    const s2 = [...lastPayouts.slice(lastPayouts.length - 5), {...emptyPayout, idx: peekPayOutIdx()}]
+    return <div className='absolute right-0 top-20 w-[90px] h-[280px] md:py-10 px-2 overflow-hidden'>
+        {s2.map((p, idx) => (
+            <div key={p.idx} className={"transition-all duration-1000 overflow-hidden absolute"}
+                style={{
+                    top: -50 + idx * 60,
+                    height: (idx === 0 ? 0 : 60),
+                    maxHeight: (idx === 0 ? 0 : 60),
+                    width: 70,
+                    zIndex: 100-idx,
+                }}
+            >
+                {/* <span className="text-white">{idx}-{p.idx}</span> */}
+                <PayoutWidget payout={p} relative />
+            </div>
+        ))}
     </div>
 }
